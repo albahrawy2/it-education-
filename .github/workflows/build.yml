@@ -18,21 +18,18 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Find and Build APK
+      - name: Build APK
         run: |
-          # فك ملفات الضغط تلقائياً
-          for f in *.zip; do [ -f "$f" ] && unzip -q -o "$f" -d unzipped_files; done
+          # فك ملفات الضغط إن وجدت
+          for f in *.zip; do [ -f "$f" ] && unzip -q -o "$f" -d unzipped_project; done
           
-          # البحث عن مسار المشروع
-          PROJECT_DIR=$(dirname $(find . -name "build.gradle*" -o -name "settings.gradle*" | head -n 1))
-          echo "Found project at: $PROJECT_DIR"
-          cd "$PROJECT_DIR"
+          # الدخول تلقائياً إلى مجلد المشروع
+          cd unzipped_project/* 2>/dev/null || cd .
           
-          # تحديث إصدار Gradle ليتوافق مع Java 17 وتجنب الأخطاء
-          gradle wrapper --gradle-version 8.5
+          # إعطاء صلاحيات التشغيل لملف البناء
+          chmod +x gradlew || gradle wrapper
           
-          chmod +x gradlew || true
-          ./gradlew wrapper --gradle-version 8.5
+          # بناء التطبيق
           ./gradlew assembleDebug
 
       - name: Upload APK
