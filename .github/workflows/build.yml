@@ -20,16 +20,22 @@ jobs:
 
       - name: Build APK
         run: |
-          # فك ملفات الضغط إن وجدت
-          for f in *.zip; do [ -f "$f" ] && unzip -q -o "$f" -d unzipped_project; done
+          # فك ضغط أي ملفات مضغوطة إن وجدت
+          for f in *.zip; do [ -f "$f" ] && unzip -q -o "$f" -d extracted_files; done
           
-          # الدخول تلقائياً إلى مجلد المشروع
-          cd unzipped_project/* 2>/dev/null || cd .
+          # العثور على المجلد الذي يحتوي على ملف بناء الأندرويد والانتقال إليه بدقة
+          GRADLE_FILE=$(find . -name "build.gradle" -o -name "build.gradle.kts" | head -n 1)
+          if [ -z "$GRADLE_FILE" ]; then
+            echo "Error: build.gradle not found!"
+            exit 1
+          fi
           
-          # إعطاء صلاحيات التشغيل لملف البناء
+          PROJECT_DIR=$(dirname "$GRADLE_FILE")
+          echo "Entering project directory: $PROJECT_DIR"
+          cd "$PROJECT_DIR"
+          
+          # إعطاء الصلاحيات وبناء التطبيق
           chmod +x gradlew || gradle wrapper
-          
-          # بناء التطبيق
           ./gradlew assembleDebug
 
       - name: Upload APK
