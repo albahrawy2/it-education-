@@ -20,15 +20,19 @@ jobs:
 
       - name: Find and Build APK
         run: |
-          # فك أي ملف ضغط موجود تلقائياً
+          # فك ملفات الضغط تلقائياً
           for f in *.zip; do [ -f "$f" ] && unzip -q -o "$f" -d unzipped_files; done
           
-          # البحث عن مجلد المشروع الذي يحتوي على ملف البناء
+          # البحث عن مسار المشروع
           PROJECT_DIR=$(dirname $(find . -name "build.gradle*" -o -name "settings.gradle*" | head -n 1))
           echo "Found project at: $PROJECT_DIR"
           cd "$PROJECT_DIR"
           
-          chmod +x gradlew || gradle wrapper
+          # تحديث إصدار Gradle ليتوافق مع Java 17 وتجنب الأخطاء
+          gradle wrapper --gradle-version 8.5
+          
+          chmod +x gradlew || true
+          ./gradlew wrapper --gradle-version 8.5
           ./gradlew assembleDebug
 
       - name: Upload APK
