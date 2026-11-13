@@ -1,0 +1,38 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Find and Build APK
+        run: |
+          # فك أي ملف ضغط موجود تلقائياً
+          for f in *.zip; do [ -f "$f" ] && unzip -q -o "$f" -d unzipped_files; done
+          
+          # البحث عن مجلد المشروع الذي يحتوي على ملف البناء
+          PROJECT_DIR=$(dirname $(find . -name "build.gradle*" -o -name "settings.gradle*" | head -n 1))
+          echo "Found project at: $PROJECT_DIR"
+          cd "$PROJECT_DIR"
+          
+          chmod +x gradlew || gradle wrapper
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: IT-Education-App-APK
+          path: "**/*.apk"
