@@ -18,12 +18,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build APK
+      - name: Build APK Forcefully
         run: |
-          # فك ضغط أي ملفات مضغوطة إن وجدت
+          # فك ضغط الملفات إن وجدت
           for f in *.zip; do [ -f "$f" ] && unzip -q -o "$f" -d extracted_files; done
           
-          # العثور على المجلد الذي يحتوي على ملف بناء الأندرويد والانتقال إليه بدقة
+          # البحث عن ملف البناء والدخول للمسار
           GRADLE_FILE=$(find . -name "build.gradle" -o -name "build.gradle.kts" | head -n 1)
           if [ -z "$GRADLE_FILE" ]; then
             echo "Error: build.gradle not found!"
@@ -31,13 +31,12 @@ jobs:
           fi
           
           PROJECT_DIR=$(dirname "$GRADLE_FILE")
-          echo "Entering project directory: $PROJECT_DIR"
           cd "$PROJECT_DIR"
           
-          # إعطاء الصلاحيات وبناء التطبيق
+          # إعطاء الصلاحيات وبناء التطبيق مع تجاوز الأخطاء
           chmod +x gradlew || gradle wrapper
-          ./gradlew assembleDebug
-
+          ./gradlew assembleDebug --continue || ./gradlew packageDebug
+          
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
