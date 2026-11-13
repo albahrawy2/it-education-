@@ -18,27 +18,24 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Create and Build Clean Android Project
+      - name: Build Project and Find APK
         run: |
-          # فك ضغط أي ملفات مضغوطة موجودة لاستخراج المحتوى
+          # فك ضغط أي ملفات مضغوطة
           for f in *.zip; do [ -f "$f" ] && unzip -q -o "$f" -d extracted_files; done
           
-          # إنشاء مشروع أندرويد قياسي ونظيف يتوافق مع أحدث إصدارات Gradle
-          echo "Creating clean Android project structure..."
-          npx --yes react-native-create-library --help > /dev/null 2>&1 || true
-          
-          # استخدام أدوات البناء الافتراضية لبناء ملف APK تجريبي نظيف ومضمن به الملفات
-          gradle init --type java-application --dsl kotlin --test-framework junit4 --project-name "IT-Education" --package "com.iteducation.app" --info || true
-          
-          # محاولة التجميع المباشر لأي ملفات كود وجدناها
-          find . -name "build.gradle" -o -name "build.gradle.kts" | head -n 1 | xargs dirname | xargs -I {} sh -c "cd {} && chmod +x gradlew || true && ./gradlew assembleDebug || true"
-          
-          # التحقق من وجود أي ملف APK وإنشائه إن لم يتواجد
-          mkdir -p final_apk_output
-          find . -name "*.apk" -exec cp {} final_apk_output/ \;
+          # البحث عن أول مجلد مشروع وبنائه بالطريقة القياسية
+          GRADLE_DIR=$(dirname $(find . -name "build.gradle" -o -name "build.gradle.kts" | head -n 1))
+          if [ "$GRADLE_DIR" != "." ]; then
+            cd "$GRADLE_DIR"
+            chmod +x gradlew || gradle wrapper
+            ./gradlew assembleDebug || ./gradlew assembleRelease || true
+          fi
 
-      - name: Upload APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: IT-Education-App-APK
-          path: "**/*.apk"
+          path: |
+            **/*.apk
+            !**/build/intermediates/**
+            !**/build/outputs/apk/androidTest/**
