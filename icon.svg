@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+    <linearGradient id="yellowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#3b82f6" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+  
+  <!-- Subtle border highlight -->
+  <rect x="6" y="6" width="500" height="500" rx="106" fill="none" stroke="url(#blueGrad)" stroke-width="4" stroke-opacity="0.4"/>
+
+  <!-- Inner Glowing Shield / Terminal Badge -->
+  <g filter="url(#glow)">
+    <rect x="76" y="76" width="360" height="360" rx="72" fill="#1e293b" stroke="#334155" stroke-width="4"/>
+  </g>
+
+  <!-- Code / Terminal Header dots -->
+  <circle cx="126" cy="120" r="10" fill="#ef4444"/>
+  <circle cx="156" cy="120" r="10" fill="#f59e0b"/>
+  <circle cx="186" cy="120" r="10" fill="#10b981"/>
+
+  <!-- Title Badge in SVG -->
+  <rect x="330" y="106" width="76" height="28" rx="8" fill="#3b82f6" fill-opacity="0.2"/>
+  <text x="368" y="125" fill="#60a5fa" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">APK</text>
+
+  <!-- Terminal Code Brackets and Python Symbol -->
+  <!-- Left Angle Bracket < -->
+  <path d="M190 200 L130 260 L190 320" fill="none" stroke="url(#blueGrad)" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Right Angle Bracket > -->
+  <path d="M322 200 L382 260 L322 320" fill="none" stroke="url(#yellowGrad)" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Python Snakes / Chip Core in Center -->
+  <g transform="translate(256, 260)">
+    <!-- Central IT Core Chip -->
+    <rect x="-36" y="-36" width="72" height="72" rx="18" fill="#0f172a" stroke="#60a5fa" stroke-width="6"/>
+    <!-- Slash / Code divider -->
+    <path d="M14 -22 L-14 22" stroke="#38bdf8" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="0" cy="0" r="6" fill="#fbbf24"/>
+  </g>
+
+  <!-- Bottom Label -->
+  <text x="256" y="388" fill="#f8fafc" font-family="Cairo, system-ui, sans-serif" font-size="32" font-weight="900" text-anchor="middle" letter-spacing="2">تعليم IT</text>
+  <text x="256" y="415" fill="#94a3b8" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="middle" letter-spacing="3">IT EDUCATION</text>
+</svg>

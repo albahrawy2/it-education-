@@ -1,0 +1,36 @@
+plugins {
+    id 'com.android.application'
+    id 'com.chaquo.python'
+}
+
+android {
+    namespace 'com.ict.codebasics'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.ict.codebasics"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.1"
+        python {
+            // Bundles the Python interpreter into the APK; code execution works offline.
+            version "3.10"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+}
+
+dependencies {
+    implementation "com.chaquo.python:android:16.1.0"
+}

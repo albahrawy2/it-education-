@@ -1,0 +1,959 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      (function() {
+        var origError = console.error;
+        console.error = function() {
+          for (var i = 0; i < arguments.length; i++) {
+            var arg = arguments[i];
+            if ((arg instanceof Error && arg.message && arg.message.indexOf('WebSocket closed without opened') !== -1) ||
+                (typeof arg === 'string' && arg.indexOf('WebSocket closed without opened') !== -1)) {
+              return;
+            }
+          }
+          return origError.apply(console, arguments);
+        };
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
+    <title>it-education | منصة تكنولوجيا المعلومات وبايثون</title>
+    <meta name="description" content="منصة it-education التعليمية التفاعلية الشاملة لمواد تكنولوجيا المعلومات ومحرر بايثون ومساعد الذكاء الاصطناعي ومولد الاختبارات وتطبيق أندرويد APK" />
+    <meta property="og:title" content="it-education | منصة تكنولوجيا المعلومات وبايثون" />
+    <meta property="og:description" content="منصة it-education التعليمية التفاعلية الشاملة لمواد تكنولوجيا المعلومات ومحرر بايثون ومساعد الذكاء الاصطناعي ومولد الاختبارات وتطبيق أندرويد APK" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#050811" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="it-education" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+    <link rel="alternate icon" type="image/png" href="./pwa-192x192.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" crossorigin href="./assets/index-qIEvPJnB.css" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <script id="vite-plugin-pwa:register-sw" src="./registerSW.js"></script>
+
+    <style>
+      :root {
+        --gate-bg: #050811;
+        --gate-card: rgba(15, 23, 42, 0.84);
+        --gate-border: rgba(148, 163, 184, 0.18);
+        --gate-primary: #3b82f6;
+        --gate-accent: #8b5cf6;
+        --gate-emerald: #10b981;
+        --gate-rose: #ef4444;
+        --gate-amber: #f59e0b;
+      }
+
+      /* حجب الموقع الأصلي بالكامل حتى يتم التوثيق وتحديد الصلاحية */
+      #root {
+        display: none;
+        padding-top: 56px;
+      }
+
+      body.authenticated #root {
+        display: block;
+      }
+
+      /* بوابة الدخول الإلزامية قبل الموقع */
+      #itedu-security-gate {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: radial-gradient(circle at 80% 10%, #1e1b4b 0%, #050811 65%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        overflow-y: auto;
+        font-family: 'Cairo', sans-serif;
+      }
+
+      #itedu-particles {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .gate-card {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 455px;
+        background: var(--gate-card);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
+        border: 1px solid var(--gate-border);
+        border-radius: 26px;
+        padding: 32px 26px;
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.78), 0 0 42px rgba(59, 130, 246, 0.25);
+        animation: gateAppear 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      @keyframes gateAppear {
+        from { opacity: 0; transform: translateY(30px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      .gate-logo {
+        width: 66px;
+        height: 66px;
+        margin: 0 auto 12px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, var(--gate-primary), var(--gate-accent));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 12px 30px rgba(59, 130, 246, 0.45);
+        animation: logoFloat 3s ease-in-out infinite alternate;
+      }
+
+      @keyframes logoFloat {
+        from { transform: translateY(0); }
+        to { transform: translateY(-6px); }
+      }
+
+      .gate-title {
+        text-align: center;
+        font-size: 25px;
+        font-weight: 900;
+        background: linear-gradient(90deg, #ffffff, #93c5fd, #c4b5fd);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .gate-subtitle {
+        text-align: center;
+        font-size: 13px;
+        color: #94a3b8;
+        margin-top: 4px;
+        margin-bottom: 22px;
+      }
+
+      .gate-tabs {
+        display: flex;
+        background: rgba(9, 13, 24, 0.85);
+        padding: 5px;
+        border-radius: 14px;
+        border: 1px solid var(--gate-border);
+        margin-bottom: 20px;
+      }
+
+      .gate-tab {
+        flex: 1;
+        text-align: center;
+        padding: 10px;
+        font-size: 13.5px;
+        font-weight: 800;
+        color: #94a3b8;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+      }
+
+      .gate-tab.active {
+        background: linear-gradient(135deg, var(--gate-primary), var(--gate-accent));
+        color: #fff;
+        box-shadow: 0 6px 18px rgba(59, 130, 246, 0.35);
+      }
+
+      .gate-field {
+        margin-bottom: 14px;
+      }
+
+      .gate-field label {
+        display: block;
+        font-size: 12.5px;
+        font-weight: 700;
+        color: #cbd5e1;
+        margin-bottom: 6px;
+      }
+
+      .gate-input {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--gate-border);
+        background: rgba(9, 13, 24, 0.82);
+        color: #f8fafc;
+        font-size: 14px;
+        outline: none;
+        transition: 0.25s;
+      }
+
+      .gate-input:focus {
+        border-color: var(--gate-primary);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+      }
+
+      .gate-btn {
+        width: 100%;
+        padding: 13px;
+        border: none;
+        border-radius: 13px;
+        background: linear-gradient(135deg, var(--gate-primary), var(--gate-accent));
+        color: #fff;
+        font-weight: 800;
+        font-size: 15px;
+        cursor: pointer;
+        transition: 0.25s;
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+        margin-top: 6px;
+      }
+
+      .gate-btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .pw-meter {
+        height: 5px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.08);
+        margin-top: 6px;
+        overflow: hidden;
+      }
+
+      .pw-meter-bar {
+        height: 100%;
+        width: 0%;
+        transition: width 0.3s ease, background 0.3s ease;
+      }
+
+      /* الشريط العلوي المدمج فوق الموقع الأصلي بعد الدخول */
+      #itedu-top-bar {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 56px;
+        z-index: 9000;
+        background: rgba(9, 13, 24, 0.94);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--gate-border);
+        padding: 0 16px;
+        align-items: center;
+        justify-content: space-between;
+        font-family: 'Cairo', sans-serif;
+      }
+
+      body.authenticated #itedu-top-bar {
+        display: flex;
+      }
+
+      .role-pill {
+        font-size: 11.5px;
+        font-weight: 800;
+        padding: 3px 10px;
+        border-radius: 99px;
+      }
+      .role-admin { background: rgba(139, 92, 246, 0.25); color: #ddd6fe; border: 1px solid #8b5cf6; }
+      .role-doctor { background: rgba(59, 130, 246, 0.25); color: #bfdbfe; border: 1px solid #3b82f6; }
+      .role-student { background: rgba(16, 185, 129, 0.25); color: #a7f3d0; border: 1px solid #10b981; }
+
+      .bar-btn {
+        padding: 7px 14px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 800;
+        border: 1px solid var(--gate-border);
+        cursor: pointer;
+        color: #fff;
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        transition: 0.2s;
+      }
+
+      .bar-btn-logout {
+        background: rgba(239, 68, 68, 0.2);
+        border-color: rgba(239, 68, 68, 0.5);
+        color: #fca5a5;
+      }
+
+      /* نافذة الفصول الدراسية ولوحة الأدمن والدكتور والطالب */
+      #itedu-classroom-drawer {
+        display: none;
+        position: fixed;
+        inset: 56px 0 0 0;
+        z-index: 8999;
+        background: rgba(5, 8, 17, 0.96);
+        backdrop-filter: blur(20px);
+        padding: 22px;
+        overflow-y: auto;
+        font-family: 'Cairo', sans-serif;
+      }
+
+      .drawer-grid {
+        max-width: 1150px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 20px;
+      }
+
+      .drawer-box {
+        background: rgba(15, 23, 42, 0.92);
+        border: 1px solid var(--gate-border);
+        border-radius: 20px;
+        padding: 20px;
+      }
+
+      .drawer-item {
+        background: rgba(9, 13, 24, 0.78);
+        border: 1px solid var(--gate-border);
+        border-radius: 14px;
+        padding: 12px 14px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .action-chip {
+        padding: 6px 11px;
+        border-radius: 8px;
+        border: none;
+        font-size: 11.5px;
+        font-weight: 800;
+        color: #fff;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      #itedu-toast {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 100000;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .toast-msg {
+        background: #0f172a;
+        color: #fff;
+        border-right: 4px solid var(--gate-primary);
+        padding: 11px 16px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 700;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+      }
+    </style>
+  </head>
+
+  <body class="bg-slate-950 text-slate-100 antialiased selection:bg-blue-500 selection:text-white">
+    <div id="itedu-toast"></div>
+
+    <!-- 1. بوابة الحماية وتسجيل الدخول الإلزامية (تعمل قبل تحميل الموقع) -->
+    <div id="itedu-security-gate">
+      <canvas id="itedu-particles"></canvas>
+
+      <div class="gate-card" id="gate-auth-box">
+        <div class="gate-logo">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+        </div>
+        <div class="gate-title">it-education</div>
+        <div class="gate-subtitle">البوابة الأكاديمية المحمية — سجل دخولك للوصول للمنصة</div>
+
+        <div class="gate-tabs">
+          <div id="gtab-login" class="gate-tab active" onclick="switchGateTab('login')">تسجيل الدخول</div>
+          <div id="gtab-register" class="gate-tab" onclick="switchGateTab('register')">إنشاء حساب جديد</div>
+        </div>
+
+        <!-- نموذج الدخول -->
+        <form id="gform-login" onsubmit="submitGateLogin(event)">
+          <div class="gate-field">
+            <label>اسم المستخدم (Username) أو البريد الإلكتروني</label>
+            <input type="text" id="glogin-user" class="gate-input" placeholder="Username or Email" autocomplete="username" required />
+          </div>
+          <div class="gate-field">
+            <label>كلمة المرور</label>
+            <input type="password" id="glogin-pass" class="gate-input" placeholder="••••••••" autocomplete="current-password" required />
+          </div>
+          <button type="submit" class="gate-btn">دخول آمن إلى it-education</button>
+        </form>
+
+        <!-- نموذج إنشاء حساب جديد -->
+        <form id="gform-register" style="display:none;" onsubmit="submitGateRegister(event)">
+          <div class="gate-field">
+            <label>الاسم الكامل الحقيقي</label>
+            <input type="text" id="greg-name" class="gate-input" placeholder="أدخل اسمك الثلاثي" required />
+          </div>
+          <div class="gate-field">
+            <label>اسم المستخدم (Username إجباري بالإنجليزية والأرقام)</label>
+            <input type="text" id="greg-user" class="gate-input" placeholder="مثال: ahmed_2026" oninput="checkUsernameAvailability(this.value)" required />
+            <small id="greg-user-hint" style="font-size:11.5px; display:block; margin-top:4px;"></small>
+          </div>
+          <div class="gate-field">
+            <label>البريد الإلكتروني الأكاديمي أو الشخصي (إجباري)</label>
+            <input type="email" id="greg-email" class="gate-input" placeholder="name@example.com" required />
+          </div>
+          <div class="gate-field">
+            <label>كلمة المرور</label>
+            <input type="password" id="greg-pass" class="gate-input" placeholder="6 أحرف أو أرقام على الأقل" minlength="6" oninput="updatePasswordMeter(this.value)" required />
+            <div class="pw-meter"><div id="pw-bar" class="pw-meter-bar"></div></div>
+          </div>
+          <button type="submit" class="gate-btn">إنشاء الحساب وإرسال طلب التفعيل</button>
+        </form>
+      </div>
+
+      <!-- شاشة انتظار تفعيل الأدمن (تمنع الدخول للموقع حتى يوافق Albahrawy) -->
+      <div class="gate-card" id="gate-pending-box" style="display:none; text-align:center;">
+        <div class="gate-logo" style="background:linear-gradient(135deg,#f59e0b,#ea580c);">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <h2 style="font-size:20px; font-weight:800; margin-bottom:8px;">حسابك بانتظار تصريح الإدارة</h2>
+        <p id="pending-user-info" style="font-size:13.5px; color:#94a3b8; line-height:1.7; margin-bottom:20px;"></p>
+        <button class="gate-btn" onclick="logoutFromGate()" style="background:rgba(239,68,68,0.25); border:1px solid #ef4444;">تسجيل الخروج والعودة</button>
+      </div>
+    </div>
+
+    <!-- 2. الشريط العلوي المدمج بعد فتح المنصة -->
+    <div id="itedu-top-bar">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <strong id="bar-user-label" style="font-size:13.5px; color:#f8fafc;"></strong>
+        <span id="bar-role-badge" class="role-pill"></span>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button class="bar-btn" id="btn-toggle-classroom" onclick="toggleClassroomDrawer()">
+          المحاضرات والتكليفات / الإدارة
+        </button>
+        <button class="bar-btn bar-btn-logout" onclick="logoutFromGate()">خروج</button>
+      </div>
+    </div>
+
+    <!-- 3. نافذة المحاضرات والتكليفات ولوحة تحكم المالك والدكتور والطالب -->
+    <div id="itedu-classroom-drawer">
+      <div style="max-width:1150px; margin:0 auto 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <h2 id="drawer-heading" style="font-size:20px; font-weight:900; color:#93c5fd;">بوابة الفصول الدراسية والتكليفات</h2>
+        <button class="bar-btn" onclick="toggleClassroomDrawer()">العودة إلى دروس ومختبر بايثون ✕</button>
+      </div>
+
+      <!-- قسم المالك السري (Albahrawy فقط) -->
+      <div id="drawer-admin-view" class="drawer-grid" style="display:none; margin-bottom:20px;">
+        <div class="drawer-box">
+          <h3 style="font-size:16px; font-weight:800; color:#c4b5fd; margin-bottom:14px;">
+            إدارة الحسابات وتعيين الصلاحيات (دكتور / طالب)
+          </h3>
+          <div id="admin-accounts-container"></div>
+        </div>
+      </div>
+
+      <!-- قسم الدكتور (رفع محاضرات وتكليفات + تحميل حلول الطلاب وتقييمها) -->
+      <div id="drawer-doctor-view" class="drawer-grid" style="display:none;">
+        <div class="drawer-box">
+          <h3 style="font-size:16px; font-weight:800; color:#93c5fd; margin-bottom:14px;">
+            رفع محاضرة جديدة أو تكليف (Assignment)
+          </h3>
+          <form onsubmit="doctorUploadItem(event)">
+            <div class="gate-field">
+              <label>عنوان المحاضرة أو التكليف</label>
+              <input type="text" id="doc-item-title" class="gate-input" placeholder="مثال: المحاضرة الأولى - شبكات الحاسب" required />
+            </div>
+            <div class="gate-field">
+              <label>نوع المحتوى</label>
+              <select id="doc-item-type" class="gate-input">
+                <option value="lecture">ملف محاضرة دراسية للتحميل</option>
+                <option value="assignment">تكليف دراسي (Assignment) مطلوب حله</option>
+              </select>
+            </div>
+            <div class="gate-field">
+              <label>اختر الملف من جهازك</label>
+              <input type="file" id="doc-item-file" class="gate-input" required />
+            </div>
+            <button type="submit" class="gate-btn">نشر للطلاب الآن</button>
+          </form>
+        </div>
+
+        <div class="drawer-box">
+          <h3 style="font-size:16px; font-weight:800; color:#6ee7b7; margin-bottom:14px;">
+            إجابات وتكليفات الطلاب المرسلة
+          </h3>
+          <div id="doctor-submissions-container"></div>
+        </div>
+      </div>
+
+      <!-- قسم الطالب (تحميل ملفات الدكتور ورفع حل الأسمنت) -->
+      <div id="drawer-student-view" class="drawer-grid" style="display:none;">
+        <div class="drawer-box">
+          <h3 style="font-size:16px; font-weight:800; color:#93c5fd; margin-bottom:14px;">
+            المحاضرات والتكليفات المرفوعة من الدكاترة
+          </h3>
+          <div id="student-materials-container"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. جذر تطبيق المنصة الأصلي (React + Python Runner) -->
+    <div id="root"></div>
+
+    <script>
+      // إعدادات المالك السرية المشفرة (SHA-256) الخاصة بـ Albahrawy فقط
+      const OWNER_CONFIG = {
+        usernameLower: "albahrawy",
+        displayName: "Albahrawy",
+        passSha256: "4b76ba05d3b0e61c1f9fca677d0912ec9ae46e52fcc9a2b36ed66262383cb9a4"
+      };
+
+      const STORAGE_USERS = "itedu_gate_users_v1";
+      const STORAGE_MATERIALS = "itedu_gate_materials_v1";
+      const STORAGE_SUBS = "itedu_gate_submissions_v1";
+      const STORAGE_SESSION = "itedu_gate_active_session_v1";
+      const STORAGE_OWNER_FP = "itedu_owner_device_lock_v1";
+
+      let activeUser = null;
+      let reactBundleLoaded = false;
+
+      async function sha256Hex(text) {
+        if (window.crypto && window.crypto.subtle) {
+          const buf = new TextEncoder().encode(text);
+          const hash = await crypto.subtle.digest("SHA-256", buf);
+          return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, "0")).join("");
+        }
+        return btoa(unescape(encodeURIComponent(text)));
+      }
+
+      function getDeviceFingerprint() {
+        const raw = [
+          navigator.userAgent || "",
+          navigator.language || "",
+          screen.width + "x" + screen.height,
+          navigator.hardwareConcurrency || ""
+        ].join("|");
+        let h = 0;
+        for (let i = 0; i < raw.length; i++) {
+          h = ((h << 5) - h) + raw.charCodeAt(i);
+          h |= 0;
+        }
+        return "DEV-" + Math.abs(h).toString(16).toUpperCase();
+      }
+
+      const readList = (k) => JSON.parse(localStorage.getItem(k) || "[]");
+      const writeList = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+      function notify(msg, color = "#3b82f6") {
+        const box = document.getElementById("itedu-toast");
+        const item = document.createElement("div");
+        item.className = "toast-msg";
+        item.style.borderRightColor = color;
+        item.textContent = msg;
+        box.appendChild(item);
+        setTimeout(() => item.remove(), 3500);
+      }
+
+      function switchGateTab(tab) {
+        const isLogin = tab === "login";
+        document.getElementById("gtab-login").classList.toggle("active", isLogin);
+        document.getElementById("gtab-register").classList.toggle("active", !isLogin);
+        document.getElementById("gform-login").style.display = isLogin ? "block" : "none";
+        document.getElementById("gform-register").style.display = isLogin ? "none" : "block";
+      }
+
+      function updatePasswordMeter(val) {
+        const bar = document.getElementById("pw-bar");
+        let score = 0;
+        if (val.length >= 6) score += 35;
+        if (/[A-Z]/.test(val) || /[0-9]/.test(val)) score += 35;
+        if (/[^A-Za-z0-9]/.test(val) || val.length >= 10) score += 30;
+        bar.style.width = score + "%";
+        bar.style.background = score < 40 ? "#ef4444" : score < 75 ? "#f59e0b" : "#10b981";
+      }
+
+      function checkUsernameAvailability(val) {
+        const hint = document.getElementById("greg-user-hint");
+        const clean = val.trim();
+        if (!clean) {
+          hint.textContent = "";
+          return false;
+        }
+        if (!/^[a-zA-Z0-9_]{4,22}$/.test(clean)) {
+          hint.style.color = "#ef4444";
+          hint.textContent = "اسم المستخدم يجب أن يكون 4-22 حرفاً إنجليزياً أو أرقام بدون مسافات.";
+          return false;
+        }
+        const taken = readList(STORAGE_USERS).some(u => u.username.toLowerCase() === clean.toLowerCase()) ||
+                      clean.toLowerCase() === OWNER_CONFIG.usernameLower;
+        if (taken) {
+          hint.style.color = "#ef4444";
+          hint.textContent = "اسم المستخدم محجوز بالفعل.";
+          return false;
+        }
+        hint.style.color = "#10b981";
+        hint.textContent = "اسم المستخدم متاح ✓";
+        return true;
+      }
+
+      async function submitGateRegister(e) {
+        e.preventDefault();
+        const fullName = document.getElementById("greg-name").value.trim();
+        const username = document.getElementById("greg-user").value.trim();
+        const email = document.getElementById("greg-email").value.trim().toLowerCase();
+        const pass = document.getElementById("greg-pass").value;
+
+        if (!checkUsernameAvailability(username)) {
+          notify("يرجى إدخال اسم مستخدم (Username) صالح.", "#ef4444");
+          return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          notify("يرجى كتابة بريد إلكتروني صحيح بشكل إجباري.", "#ef4444");
+          return;
+        }
+
+        const users = readList(STORAGE_USERS);
+        if (users.some(u => u.email === email)) {
+          notify("هذا البريد الإلكتروني مسجل بالفعل!", "#ef4444");
+          return;
+        }
+
+        const passHash = await sha256Hex(pass);
+        const newAccount = {
+          id: "USR-" + Date.now(),
+          fullName,
+          username,
+          email,
+          passHash,
+          role: "pending",
+          createdAt: new Date().toLocaleDateString("ar-EG")
+        };
+
+        users.push(newAccount);
+        writeList(STORAGE_USERS, users);
+        notify("تم إنشاء الحساب! بانتظار موافقة الأدمن لتحديد صلاحيتك.", "#10b981");
+        e.target.reset();
+        switchGateTab("login");
+      }
+
+      async function submitGateLogin(e) {
+        e.preventDefault();
+        const idInput = document.getElementById("glogin-user").value.trim();
+        const passInput = document.getElementById("glogin-pass").value;
+        const inputHash = await sha256Hex(passInput);
+
+        // 1. التحقق من دخول المالك السري (Albahrawy)
+        if (idInput.toLowerCase() === OWNER_CONFIG.usernameLower &&
+            (inputHash === OWNER_CONFIG.passSha256 || passInput === "M2132008m#")) {
+          const currentFp = getDeviceFingerprint();
+          const boundFp = localStorage.getItem(STORAGE_OWNER_FP);
+          if (!boundFp) {
+            localStorage.setItem(STORAGE_OWNER_FP, currentFp);
+          } else if (boundFp !== currentFp) {
+            notify("مرفوض: حساب الأدمن مقفل على بصمة جهاز المالك فقط!", "#ef4444");
+            return;
+          }
+
+          activeUser = {
+            id: "OWNER_ROOT",
+            fullName: "Albahrawy",
+            username: "Albahrawy",
+            email: "admin@it-education.local",
+            role: "admin"
+          };
+          sessionStorage.setItem(STORAGE_SESSION, JSON.stringify(activeUser));
+          unlockOriginalPlatform();
+          notify("مرحباً بك يا Albahrawy في لوحة تحكم المالك", "#8b5cf6");
+          return;
+        }
+
+        // 2. التحقق من حسابات الدكاترة والطلاب المسجلين
+        const users = readList(STORAGE_USERS);
+        const matched = users.find(
+          u => (u.username.toLowerCase() === idInput.toLowerCase() || u.email === idInput.toLowerCase()) &&
+               u.passHash === inputHash
+        );
+
+        if (!matched) {
+          notify("بيانات الدخول غير صحيحة! تأكد من اليوزر نيم أو البريد وكلمة المرور.", "#ef4444");
+          return;
+        }
+
+        activeUser = matched;
+        sessionStorage.setItem(STORAGE_SESSION, JSON.stringify(activeUser));
+        unlockOriginalPlatform();
+      }
+
+      function syncStudentNameWithOriginalApp(realName) {
+        ["it_education_state", "cb_state"].forEach(key => {
+          try {
+            const raw = localStorage.getItem(key);
+            const parsed = raw ? JSON.parse(raw) : { lang: "ar", theme: "dark", currentLesson: 0, completedLessons: {}, quizAnswers: {} };
+            parsed.studentName = realName;
+            localStorage.setItem(key, JSON.stringify(parsed));
+          } catch (err) {}
+        });
+      }
+
+      function unlockOriginalPlatform() {
+        if (!activeUser) return;
+
+        if (activeUser.role === "pending") {
+          document.getElementById("gate-auth-box").style.display = "none";
+          document.getElementById("gate-pending-box").style.display = "block";
+          document.getElementById("pending-user-info").textContent =
+            `مرحباً ${activeUser.fullName} (@${activeUser.username}) — تم تسجيل حسابك بنجاح، ولكن لا يمكنك الدخول إلى المنصة إلا بعد أن يمنحك مدير النظام صلاحية (طالب) أو (دكتور).`;
+          return;
+        }
+
+        syncStudentNameWithOriginalApp(activeUser.fullName);
+
+        document.getElementById("itedu-security-gate").style.display = "none";
+        document.body.classList.add("authenticated");
+
+        document.getElementById("bar-user-label").textContent = `${activeUser.fullName} (@${activeUser.username})`;
+        const badge = document.getElementById("bar-role-badge");
+
+        document.getElementById("drawer-admin-view").style.display = "none";
+        document.getElementById("drawer-doctor-view").style.display = "none";
+        document.getElementById("drawer-student-view").style.display = "none";
+
+        if (activeUser.role === "admin") {
+          badge.className = "role-pill role-admin";
+          badge.textContent = "المالك (Admin)";
+          document.getElementById("drawer-admin-view").style.display = "grid";
+          document.getElementById("drawer-doctor-view").style.display = "grid";
+          renderAdminAccounts();
+          renderDoctorSubmissions();
+        } else if (activeUser.role === "doctor") {
+          badge.className = "role-pill role-doctor";
+          badge.textContent = "دكتور المقرر";
+          document.getElementById("drawer-doctor-view").style.display = "grid";
+          renderDoctorSubmissions();
+        } else if (activeUser.role === "student") {
+          badge.className = "role-pill role-student";
+          badge.textContent = "طالب معتمد";
+          document.getElementById("drawer-student-view").style.display = "grid";
+          renderStudentMaterials();
+        }
+
+        if (!reactBundleLoaded) {
+          reactBundleLoaded = true;
+          const script = document.createElement("script");
+          script.type = "module";
+          script.crossOrigin = "anonymous";
+          script.src = "./assets/index-M7RU7yj1.js";
+          document.body.appendChild(script);
+        }
+      }
+
+      function toggleClassroomDrawer() {
+        const drawer = document.getElementById("itedu-classroom-drawer");
+        const isOpen = drawer.style.display === "block";
+        drawer.style.display = isOpen ? "none" : "block";
+        if (!isOpen) {
+          if (activeUser.role === "admin") renderAdminAccounts();
+          if (activeUser.role === "doctor" || activeUser.role === "admin") renderDoctorSubmissions();
+          if (activeUser.role === "student") renderStudentMaterials();
+        }
+      }
+
+      function logoutFromGate() {
+        sessionStorage.removeItem(STORAGE_SESSION);
+        activeUser = null;
+        window.location.reload();
+      }
+
+      function renderAdminAccounts() {
+        const box = document.getElementById("admin-accounts-container");
+        const users = readList(STORAGE_USERS);
+        if (users.length === 0) {
+          box.innerHTML = `<p style="color:#94a3b8; font-size:13px;">لا توجد حسابات مسجلة حالياً.</p>`;
+          return;
+        }
+        box.innerHTML = users.map(u => `
+          <div class="drawer-item">
+            <div>
+              <strong style="color:#fff;">${u.fullName}</strong> <span style="color:#93c5fd;">(@${u.username})</span><br/>
+              <small style="color:#94a3b8;">${u.email} | الصلاحية: <b style="color:#fcd34d;">${u.role}</b></small>
+            </div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button class="action-chip" style="background:#2563eb;" onclick="assignAccountRole('${u.id}','doctor')">تعيين كـ دكتور</button>
+              <button class="action-chip" style="background:#10b981;" onclick="assignAccountRole('${u.id}','student')">تعيين كـ طالب</button>
+              <button class="action-chip" style="background:#ef4444;" onclick="removeAccount('${u.id}')">حذف</button>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      function assignAccountRole(uid, role) {
+        const updated = readList(STORAGE_USERS).map(u => u.id === uid ? { ...u, role } : u);
+        writeList(STORAGE_USERS, updated);
+        renderAdminAccounts();
+        notify(`تم منح الصلاحية (${role === 'doctor' ? 'دكتور' : 'طالب'}) بنجاح`, "#10b981");
+      }
+
+      function removeAccount(uid) {
+        writeList(STORAGE_USERS, readList(STORAGE_USERS).filter(u => u.id !== uid));
+        renderAdminAccounts();
+        notify("تم حذف الحساب", "#ef4444");
+      }
+
+      function doctorUploadItem(e) {
+        e.preventDefault();
+        const title = document.getElementById("doc-item-title").value.trim();
+        const type = document.getElementById("doc-item-type").value;
+        const file = document.getElementById("doc-item-file").files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          const list = readList(STORAGE_MATERIALS);
+          list.unshift({
+            id: "MAT-" + Date.now(),
+            title,
+            type,
+            fileName: file.name,
+            fileData: ev.target.result,
+            doctorName: activeUser.fullName,
+            createdAt: new Date().toLocaleDateString("ar-EG")
+          });
+          writeList(STORAGE_MATERIALS, list);
+          notify("تم رفع ونشر الملف للطلاب بنجاح!", "#10b981");
+          e.target.reset();
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function renderStudentMaterials() {
+        const box = document.getElementById("student-materials-container");
+        const list = readList(STORAGE_MATERIALS);
+        if (list.length === 0) {
+          box.innerHTML = `<p style="color:#94a3b8; font-size:13px;">لا توجد محاضرات أو تكليفات مرفوعة حالياً.</p>`;
+          return;
+        }
+        box.innerHTML = list.map(m => `
+          <div class="drawer-item">
+            <div>
+              <strong style="color:#fff;">${m.title}</strong>
+              <span class="role-pill ${m.type === 'assignment' ? 'role-admin' : 'role-doctor'}" style="margin-right:6px;">
+                ${m.type === 'assignment' ? 'تكليف (Assignment)' : 'محاضرة'}
+              </span><br/>
+              <small style="color:#94a3b8;">بواسطة: د. ${m.doctorName} | الملف: ${m.fileName}</small>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <a href="${m.fileData}" download="${m.fileName}" class="action-chip" style="background:#2563eb;">
+                تنزيل الملف ⬇
+              </a>
+              ${m.type === 'assignment' ? `
+                <label class="action-chip" style="background:#10b981;">
+                  رفع الحل ⬆
+                  <input type="file" style="display:none;" onchange="studentSubmitSolution('${m.id}', '${m.title}', this)" />
+                </label>
+              ` : ''}
+            </div>
+          </div>
+        `).join("");
+      }
+
+      function studentSubmitSolution(matId, matTitle, input) {
+        const file = input.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          const subs = readList(STORAGE_SUBS);
+          subs.unshift({
+            id: "SUB-" + Date.now(),
+            matId,
+            matTitle,
+            studentName: activeUser.fullName,
+            studentUser: activeUser.username,
+            fileName: file.name,
+            fileData: ev.target.result,
+            date: new Date().toLocaleString("ar-EG")
+          });
+          writeList(STORAGE_SUBS, subs);
+          notify("تم إرسال حل التكليف للدكتور بنجاح!", "#10b981");
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function renderDoctorSubmissions() {
+        const box = document.getElementById("doctor-submissions-container");
+        const subs = readList(STORAGE_SUBS);
+        if (subs.length === 0) {
+          box.innerHTML = `<p style="color:#94a3b8; font-size:13px;">لم يقم الطلاب برفع حلول للتكليفات حتى الآن.</p>`;
+          return;
+        }
+        box.innerHTML = subs.map(s => `
+          <div class="drawer-item">
+            <div>
+              <strong style="color:#fff;">${s.matTitle}</strong><br/>
+              <small style="color:#94a3b8;">الطالب: ${s.studentName} (@${s.studentUser}) | ${s.date}</small>
+            </div>
+            <a href="${s.fileData}" download="${s.fileName}" class="action-chip" style="background:#10b981;">
+              تحميل إجابة الطالب ⬇
+            </a>
+          </div>
+        `).join("");
+      }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        const saved = sessionStorage.getItem(STORAGE_SESSION);
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved);
+            if (parsed.id === "OWNER_ROOT") {
+              activeUser = parsed;
+              unlockOriginalPlatform();
+            } else {
+              const latest = readList(STORAGE_USERS).find(u => u.id === parsed.id);
+              if (latest) {
+                activeUser = latest;
+                sessionStorage.setItem(STORAGE_SESSION, JSON.stringify(latest));
+                unlockOriginalPlatform();
+              }
+            }
+          } catch (e) {}
+        }
+      });
+
+      (function initParticles() {
+        const c = document.getElementById("itedu-particles");
+        const ctx = c.getContext("2d");
+        let pts = [];
+        const resize = () => { c.width = window.innerWidth; c.height = window.innerHeight; };
+        window.addEventListener("resize", resize);
+        resize();
+        for (let i = 0; i < 50; i++) {
+          pts.push({
+            x: Math.random() * c.width,
+            y: Math.random() * c.height,
+            r: Math.random() * 2 + 0.8,
+            dx: (Math.random() - 0.5) * 0.55,
+            dy: (Math.random() - 0.5) * 0.55
+          });
+        }
+        function draw() {
+          ctx.clearRect(0, 0, c.width, c.height);
+          ctx.fillStyle = "rgba(96, 165, 250, 0.4)";
+          pts.forEach(p => {
+            p.x += p.dx; p.y += p.dy;
+            if (p.x < 0 || p.x > c.width) p.dx *= -1;
+            if (p.y < 0 || p.y > c.height) p.dy *= -1;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fill();
+          });
+          requestAnimationFrame(draw);
+        }
+        draw();
+      })();
+    </script>
+  </body>
+</html>

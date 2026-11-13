@@ -1,0 +1,7 @@
+IT Education / تعليم IT
+Copyright (c) 2026 Mohamed Emad Ali Hassan. All rights reserved.
+
+This project and its original interface/content are branded as IT Education (تعليم IT).
+No permission is granted to redistribute, rebrand, or commercially exploit the original project without written permission, except where third-party components have their own licenses.
+
+Python execution is provided by Chaquopy; see its own license and terms.
